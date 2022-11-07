@@ -1,0 +1,14 @@
+{
+  "name": "vdc-back-end",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/Vem-de-Carona/vdc-back-end.git",
+  "author": "Gustavo Henrique Alves <he.gustavoalves@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
