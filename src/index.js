@@ -34,16 +34,15 @@ connection.connect(function(err) {
  */
 
 app.get('/login', (request, response) => {
-    const { username, password } = request.body;
+    const { email, password } = request.body;
 
-    connection.query('SELECT USUARIO, SENHA FROM CADASTRO' +
-        ' WHERE USUARIO = ' + mysql.escape(username) +
+    connection.query('SELECT EMAIL, SENHA FROM CADASTRO' + ' WHERE EMAIL = ' + mysql.escape(email) +
         ' AND SENHA = ' + mysql.escape(password), (err, rows) => {
+
+        if (err) throw err;
         console.log(rows);
 
-        if (err) {
-            throw err;
-        } else if(rows.length > 0) {
+        if(rows.length > 0) {
             return response.status(200).send('Logar');
         } else {
             return response.status(404).send('Não encontrado');
