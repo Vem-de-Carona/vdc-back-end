@@ -74,5 +74,6 @@ app.post('/signUp/passenger', (request, response) => {
 
         if (err) throw err;
         console.log(rows);
+        return response.status(200);
     });
 });
