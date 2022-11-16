@@ -7,8 +7,8 @@ app.listen("3333");
 
 const connection = mysql.createConnection({
     host: "localhost",
-    user: "Gustavo",
-    password: "dmLrÇ7pzJ2",
+    user: "",
+    password: "",
     database: "VEMDECARONA"
 });
 
