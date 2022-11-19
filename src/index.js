@@ -63,23 +63,35 @@ app.post('/signUp/passenger', (request, response) => {
         // Se o e-mail fornecido pelo usuário ainda não existir no banco
         if (rows.length === 0) {
 
-            connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
-               'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
-                ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+            connection.query('SELECT CPF FROM PASSAGEIRO WHERE CPF = ' + mysql.escape(cpf),
                 (err, rows) => {
 
-                if (err) throw err;
-                console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
-            });
+                    if (err) throw err;
+                    console.log("/signUp/passenger - SELECT CPF ROWS: ", rows);
 
-            connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
-                'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
-                 mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+                    if (rows.length === 0) {
 
-                if (err) throw err;
-                console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+                        connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
+                            'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
+                            ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+                            (err, rows) => {
+
+                                if (err) throw err;
+                                console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
+                            });
+
+                        connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
+                            'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
+                            mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+
+                            if (err) throw err;
+                            console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+                        });
+                        return response.status(201).send("Usuário cadastrado com sucesso.");
+                    } else {
+                        return response.status(400).send("CPF já cadastrado.");
+                    }
             });
-            return response.status(201).send("Usuário cadastrado com sucesso.");
         } else {
             return response.status(400).send("E-mail já cadastrado.");
         }
