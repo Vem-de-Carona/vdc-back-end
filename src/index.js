@@ -71,29 +71,43 @@ app.post('/signUp/passenger', (request, response) => {
 
                     if (rows.length === 0) {
 
-                        connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
-                            'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
-                            ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+                        connection.query('SELECT TELEFONE FROM PASSAGEIRO WHERE TELEFONE = ' + mysql.escape(phone),
                             (err, rows) => {
 
                                 if (err) throw err;
-                                console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
-                            });
+                                console.log("/signUp/passenger - SELECT TELEFONE ROWS: ", rows);
 
-                        connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
-                            'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
-                            mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+                                if (rows.length === 0) {
 
-                            if (err) throw err;
-                            console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
-                        });
-                        return response.status(201).send("Usuário cadastrado com sucesso.");
+                                    connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
+                                        'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
+                                        ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+                                        (err, rows) => {
+
+                                            if (err) throw err;
+                                            console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
+                                        });
+
+                                    connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
+                                        'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
+                                        mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+
+                                        if (err) throw err;
+                                        console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+                                    });
+                                    return response.status(201).send("Usuário cadastrado com sucesso.");
+                                } else {
+                                    return response.status(400).send("TELEFONE já cadastrado.");
+                                }
+                            }
+                        );
                     } else {
                         return response.status(400).send("CPF já cadastrado.");
                     }
-            });
+                }
+            );
         } else {
             return response.status(400).send("E-mail já cadastrado.");
         }
-    })
+    });
 });
