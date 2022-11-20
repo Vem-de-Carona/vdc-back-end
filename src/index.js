@@ -49,3 +49,31 @@ app.get('/login', (request, response) => {
         }
     });
 });
+
+app.post('/signUp/passenger', (request, response) => {
+    const { name, surname, birthDate, email, phone, cpf, password } = request.body;
+
+    const birthday = birthDate.substring(0, 2);
+    const birthMonth = birthDate.substring(3, 5);
+    const birthYear = birthDate.substring(6, 10);
+
+    const currentdate = new Date;
+    const currentYear = currentdate.getFullYear();
+    const currentMonth = currentdate.getMonth();
+    const currentDay = currentdate.getDate();
+
+    let age = currentYear - birthYear;
+
+    if (currentMonth < birthMonth || currentMonth === birthMonth && currentDay < birthday) {
+        age--;
+    }
+
+    connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE) ' +
+        'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(name) + ' ' + mysql.escape(surname) + ', ' +
+        mysql.escape(phone) + ', ' + mysql.escape(age) + ')', (err, rows) => {
+
+        if (err) throw err;
+        console.log(rows);
+        return response.status(200);
+    });
+});
