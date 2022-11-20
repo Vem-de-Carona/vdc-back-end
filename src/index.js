@@ -17,22 +17,6 @@ connection.connect(function(err) {
     console.log("MYSQL connected!");
 });
 
-/**
- * GET - Buscar uma informação dentro do servidor
- * POST - Inserir uma informação dentro do servidor
- * PUT - Alterar uma informação dentro do servidor
- * PATCH - Alterar uma informação específica dentro do servidor
- * DELETE - Deletar uma informação dentro do servidor
- */
-
-/**
- *  TIPOS DE PARÂMETROS
- *
- *  Route Params => Identificar um recurso para buscar/editar/deletar
- *  Query Params => Paginação / Filtro
- *  Body Params => Os objetos para inserção/alteração (JSON)
- */
-
 app.get('/login', (request, response) => {
     const { email, password } = request.body;
 
@@ -51,11 +35,11 @@ app.get('/login', (request, response) => {
 });
 
 app.post('/signUp/passenger', (request, response) => {
-    const { name, surname, birthDate, email, phone, cpf, password } = request.body;
+    const { cpf, name, surname, birthDate, email, phone, password } = request.body;
 
-    const birthday = birthDate.substring(0, 2);
-    const birthMonth = birthDate.substring(3, 5);
-    const birthYear = birthDate.substring(6, 10);
+    const birthYear = birthDate.substring(0, 4);
+    const birthMonth = birthDate.substring(5, 7);
+    const birthday = birthDate.substring(8, 10);
 
     const currentdate = new Date;
     const currentYear = currentdate.getFullYear();
@@ -68,12 +52,36 @@ app.post('/signUp/passenger', (request, response) => {
         age--;
     }
 
-    connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE) ' +
-        'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(name) + ' ' + mysql.escape(surname) + ', ' +
-        mysql.escape(phone) + ', ' + mysql.escape(age) + ')', (err, rows) => {
+    const fullName = name.concat(' ' + surname);
+
+    connection.query('SELECT EMAIL FROM CADASTRO WHERE EMAIL = ' + mysql.escape(email),
+        (err, rows) => {
 
         if (err) throw err;
-        console.log(rows);
-        return response.status(200);
-    });
+        console.log("/signUp/passenger - SELECT EMAIL ROWS: ", rows);
+
+        // Se o e-mail fornecido pelo usuário ainda não existir no banco
+        if (rows.length === 0) {
+
+            connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
+               'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
+                ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+                (err, rows) => {
+
+                if (err) throw err;
+                console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
+            });
+
+            connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
+                'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
+                 mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+
+                if (err) throw err;
+                console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+            });
+            return response.status(201).send("Usuário cadastrado com sucesso.");
+        } else {
+            return response.status(400).send("E-mail já cadastrado.");
+        }
+    })
 });
