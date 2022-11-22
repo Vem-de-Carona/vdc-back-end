@@ -1,0 +1,11 @@
+{
+  "express": {
+    "port": ""
+  },
+  "database": {
+    "host": "",
+    "user": "",
+    "password": "",
+    "databaseName": ""
+  }
+}

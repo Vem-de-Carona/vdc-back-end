@@ -36,10 +36,9 @@ app.get('/login', (request, response) => {
 });
 
 function calculateUserAge(birthDate) {
-
-    const birthYear = birthDate.substring(0, 4);
-    const birthMonth = birthDate.substring(5, 7);
-    const birthday = birthDate.substring(8, 10);
+    const birthMonth = birthDate.substring(0, 2);
+    const birthday = birthDate.substring(3, 5);
+    const birthYear = birthDate.substring(6, 12);
 
     const currentDate = new Date;
     const currentYear = currentDate.getFullYear();
@@ -51,7 +50,6 @@ function calculateUserAge(birthDate) {
     if (currentMonth < birthMonth || currentMonth === birthMonth && currentDay < birthday) {
         age--;
     }
-
     return age;
 }
 
@@ -119,14 +117,14 @@ app.post('/signUp/passenger', verifyUserEmail, verifyUserCPF, verifyUserPhone, (
 
         if (err) throw err;
         console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
-    });
 
-    connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
-        'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
-        mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+            connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
+                'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
+                mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
 
-        if (err) throw err;
-        console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+                if (err) throw err;
+                console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+            });
+            return response.status(201).send("Usuário cadastrado com sucesso.");
     });
-    return response.status(201).send("Usuário cadastrado com sucesso.");
 });
