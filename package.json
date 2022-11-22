@@ -6,6 +6,7 @@
   "author": "Gustavo Henrique Alves <he.gustavoalves@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "config": "^3.3.8",
     "express": "^4.18.2",
     "mysql2": "^2.3.3"
   },
