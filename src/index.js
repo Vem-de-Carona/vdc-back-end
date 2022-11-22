@@ -24,10 +24,9 @@ app.get('/login', (request, response) => {
     connection.query('SELECT EMAIL, SENHA FROM CADASTRO' + ' WHERE EMAIL = ' + mysql.escape(email) +
         ' AND SENHA = ' + mysql.escape(password), (err, rows) => {
 
-        if (err) throw err;
-        console.log("/login - SELECT EMAIL, SENHA FROM CADASTRO: ", rows);
-
-        if(rows.length > 0) {
+        if (err) {
+            throw err;
+        } else if(rows.length > 0) {
             return response.status(200);
         } else {
             return response.status(404);
@@ -59,10 +58,9 @@ function verifyUserEmail(request, response, next) {
     connection.query('SELECT EMAIL FROM CADASTRO WHERE EMAIL = ' + mysql.escape(email),
         (err, rows) => {
 
-        if (err) throw err;
-        console.log("/signUp/passenger - SELECT EMAIL ROWS: ", rows);
-
-        if (rows.length === 0) {
+        if (err) {
+            throw err;
+        } else if (rows.length === 0) {
             return next();
         } else {
             return response.status(400).send("E-mail já cadastrado.")
@@ -73,57 +71,55 @@ function verifyUserEmail(request, response, next) {
 function verifyUserCPF(request, response, next) {
     const { cpf } = request.body;
 
-    connection.query('SELECT CPF FROM PASSAGEIRO WHERE CPF = ' + mysql.escape(cpf),
+    connection.query('SELECT CPF FROM USUARIO WHERE CPF = ' + mysql.escape(cpf),
         (err, rows) => {
 
-            if (err) throw err;
-            console.log("/signUp/passenger - SELECT CPF FROM PASSAGEIRO ", rows);
-
-            if (rows.length === 0) {
-                return next();
-            } else {
-                return response.status(400).send("CPF já cadastrado.");
-            }
-        });
+        if (err) {
+            throw err;
+        } else if (rows.length === 0) {
+            return next();
+        } else {
+            return response.status(400).send("CPF já cadastrado.");
+        }
+    });
 }
 
 function verifyUserPhone(request, response, next) {
     const { phone } = request.body;
 
-    connection.query('SELECT TELEFONE FROM PASSAGEIRO WHERE TELEFONE = ' + mysql.escape(phone),
+    connection.query('SELECT TELEFONE FROM USUARIO WHERE TELEFONE = ' + mysql.escape(phone),
         (err, rows) => {
 
-            if (err) throw err;
-            console.log("/signUp/passenger - SELECT TELEFONE FROM PASSAGEIRO: ", rows);
-
-            if (rows.length === 0) {
-                return next();
-            } else {
-                return response.status(400).send("Telefone já cadastrado.");
-            }
-        });
+        if (err) {
+            throw err;
+        } else if (rows.length === 0) {
+            return next();
+        } else {
+            return response.status(400).send("Telefone já cadastrado.");
+        }
+    });
 }
 
-app.post('/signUp/passenger', verifyUserEmail, verifyUserCPF, verifyUserPhone, (request, response) => {
+app.post('/signUp/user', verifyUserEmail, verifyUserCPF, verifyUserPhone, (request, response) => {
     const { cpf, name, surname, birthDate, email, phone, password } = request.body;
 
     const age = calculateUserAge(birthDate);
     const fullName = name.concat(' ' + surname);
 
-    connection.query('INSERT INTO PASSAGEIRO (CPF, NOME_COMPL, TELEFONE, IDADE)' +
+    connection.query('INSERT INTO USUARIO (CPF, NOME_COMPL, TELEFONE, IDADE, IS_MOTORISTA)' +
     'VALUES (' + mysql.escape(cpf) + ', ' + mysql.escape(fullName) +
-        ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ");",
+        ', ' + mysql.escape(phone) + ', ' + mysql.escape(age) + ", 0);",
         (err, rows) => {
 
         if (err) throw err;
-        console.log("/signUp/passenger - INSERT INTO PASSAGEIRO: ", rows);
+        console.log("/signUp/user - INSERT INTO USUARIO: ", rows);
 
-            connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_PASSAGEIRO, FK_MOTORISTA)' +
+            connection.query('INSERT INTO CADASTRO (EMAIL, SENHA, FK_USUARIO)' +
                 'VALUES (' + mysql.escape(email) + ', ' + mysql.escape(password) + ', ' +
-                mysql.escape(cpf) + ", " + null + ')', (err, rows) => {
+                mysql.escape(cpf) + ')', (err, rows) => {
 
                 if (err) throw err;
-                console.log("/signUp/passenger - INSERT INTO CADASTRO: ", rows);
+                console.log("/signUp/user - INSERT INTO CADASTRO: ", rows);
             });
             return response.status(201).send("Usuário cadastrado com sucesso.");
     });
