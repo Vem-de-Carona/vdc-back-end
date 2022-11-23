@@ -27,17 +27,17 @@ app.get('/login', (request, response) => {
         if (err) {
             throw err;
         } else if(rows.length > 0) {
-            return response.status(200);
+            return response.status(200).send();
         } else {
-            return response.status(404);
+            return response.status(404).send();
         }
     });
 });
 
 function calculateUserAge(birthDate) {
-    const birthMonth = birthDate.substring(0, 2);
-    const birthday = birthDate.substring(3, 5);
-    const birthYear = birthDate.substring(6, 12);
+    const birthYear = birthDate.substring(0, 4);
+    const birthMonth = birthDate.substring(5, 7);
+    const birthday = birthDate.substring(8, 10);
 
     const currentDate = new Date;
     const currentYear = currentDate.getFullYear();
@@ -63,7 +63,7 @@ function verifyUserEmail(request, response, next) {
         } else if (rows.length === 0) {
             return next();
         } else {
-            return response.status(400).send("E-mail já cadastrado.")
+            return response.status(400).send();
         }
     });
 }
@@ -79,7 +79,7 @@ function verifyUserCPF(request, response, next) {
         } else if (rows.length === 0) {
             return next();
         } else {
-            return response.status(400).send("CPF já cadastrado.");
+            return response.status(400).send();
         }
     });
 }
@@ -95,7 +95,7 @@ function verifyUserPhone(request, response, next) {
         } else if (rows.length === 0) {
             return next();
         } else {
-            return response.status(400).send("Telefone já cadastrado.");
+            return response.status(400).send();
         }
     });
 }
@@ -121,6 +121,6 @@ app.post('/signUp/user', verifyUserEmail, verifyUserCPF, verifyUserPhone, (reque
                 if (err) throw err;
                 console.log("/signUp/user - INSERT INTO CADASTRO: ", rows);
             });
-            return response.status(201).send("Usuário cadastrado com sucesso.");
+            return response.status(201).send();
     });
 });
