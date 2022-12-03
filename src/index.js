@@ -124,3 +124,16 @@ app.post('/signUp/user', verifyUserEmail, verifyUserCPF, verifyUserPhone, (reque
             return response.status(201).send();
     });
 });
+
+app.post('/feedback', (request, response) => {
+    const { name, email, message } = request.body;
+
+    connection.query('INSERT INTO FEEDBACK (NOME_USUARIO, EMAIL_USUARIO, MENSAGEM_FEEDBACK)' +
+        'VALUES (' + mysql.escape(name) + ', ' + mysql.escape(email) + ', ' + mysql.escape(message) + ')',
+        (err, rows) => {
+
+            if (err) throw err;
+            console.log("/feedback - INSERT INTO FEEDBACK: ", rows);
+    });
+    return response.status(201).send();
+});
