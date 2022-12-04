@@ -137,3 +137,18 @@ app.post('/feedback', (request, response) => {
     });
     return response.status(201).send();
 });
+
+app.post('/car', (request, response) => {
+    let { cpf, cnh, brand, model, year, licensePlate, maximumNumberOfPassengers } = request.body;
+
+    connection.query('INSERT INTO CARRO_MOTORISTA (CNH, MARCA, MODELO, ANO, PLACA_VEICULO,' +
+        ' VAGAS_DISPONIVEIS, FK_USUARIO_CPF)' + 'VALUES (' + mysql.escape(cnh) + ', ' + mysql.escape(brand) +
+        ', ' + mysql.escape(model) + ', ' + mysql.escape(year) + ', ' + mysql.escape(licensePlate) + ', '
+        + mysql.escape(maximumNumberOfPassengers) + ', ' + mysql.escape(cpf) + ')',
+        (err, rows) => {
+
+            if (err) throw err;
+            console.log("/feedback - INSERT INTO CARRO_MOTORISTA: ", rows);
+        });
+    return response.status(201).send();
+});
